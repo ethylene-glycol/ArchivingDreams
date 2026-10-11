@@ -1,0 +1,145 @@
+[
+    {
+        "name": "BlobsService",
+        "methods": [
+            "CreateBlob",
+            "FindMissingBlobs"
+        ]
+    },
+    {
+        "name": "CommunityService",
+        "methods": [
+            "FetchPlaylistTopic",
+            "GetCommunityJam",
+            "GetHighlightPage",
+            "ListCommunityJamEntries",
+            "ListCommunityJams",
+            "SuggestCommunityJamEntries",
+            "VoteCommunityJam"
+        ]
+    },
+    {
+        "name": "DiscoveryService",
+        "methods": [
+            "SearchCreations",
+            "SearchUserCreations",
+            "SearchUsers"
+        ]
+    },
+    {
+        "name": "DreamService",
+        "methods": [
+            "AcceptCollabInvite",
+            "CreateComment",
+            "CreationModerationReport",
+            "DeleteCollection",
+            "DeleteCollectionVersion",
+            "DeleteComment",
+            "DeleteDream",
+            "DeleteDreamVersion",
+            "DeletePhoto",
+            "DeleteScene",
+            "DeleteSceneVersion",
+            "FindMissingCreations",
+            "FindMissingPhotos",
+            "FindMissingVersions",
+            "GetCollectionMap",
+            "GetCollectionVersion",
+            "GetComment",
+            "GetCommentDetails",
+            "GetCreationDetails",
+            "GetDreamMap",
+            "GetDreamVersion",
+            "GetEditRightRef",
+            "GetPhotoDetails",
+            "GetReviewComment",
+            "GetSceneVersion",
+            "GetUserLimits",
+            "InviteCollab",
+            "ListCollectionContents",
+            "ListCollectionVersionCredits",
+            "ListCollectionVersions",
+            "ListComments",
+            "ListDreamVersionCredits",
+            "ListDreamVersions",
+            "ListPhotos",
+            "ListRemixedByCreations",
+            "ListSceneVersionCredits",
+            "ListSceneVersions",
+            "ListUsedByCreations",
+            "ListUsedCreations",
+            "MapUpdateTool",
+            "PublishCollection",
+            "PublishDream",
+            "PublishPhoto",
+            "PublishScene",
+            "RemoveCollab",
+            "UpdateCollection",
+            "UpdateCollectionVersion",
+            "UpdateComment",
+            "UpdateDream",
+            "UpdateDreamVersion",
+            "UpdatePhoto",
+            "UpdateScene",
+            "UpdateSceneVersion",
+            "UpdateTool",
+            "UpgradeEditRights"
+        ]
+    },
+    {
+        "name": "FeedsService",
+        "methods": [
+            "GetFollowingAfter",
+            "GetNotificationsAfter",
+            "ListActivity",
+            "ListFollowingFeed",
+            "ListNotifications",
+            "ShareCreation"
+        ]
+    },
+    {
+        "name": "IdentityService",
+        "methods": [
+            "GetPlayerIdentity",
+            "GetTelemetryConfig",
+            "GetUserDetails",
+            "ListBlocked",
+            "ListFriends",
+            "LoginUser",
+            "RefreshBlockList",
+            "RefreshFriendsList",
+            "RefreshUser",
+            "UpdatePlayerIdentity",
+            "UpdateUser",
+            "UserModerationReport"
+        ]
+    },
+    {
+        "name": "ImportService",
+        "methods": [
+            "SubscribeImport"
+        ]
+    },
+    {
+        "name": "ScoreboardsService",
+        "methods": [
+            "DeleteScoreboard",
+            "GetScoreboard",
+            "ListLocalScoreboardScores",
+            "ListScoreboards",
+            "ListScoreboardScores",
+            "PostScoreboardScore",
+            "ResetScoreboard"
+        ]
+    },
+    {
+        "name": "SocialService",
+        "methods": [
+            "GetSocialState",
+            "GetSocialStats",
+            "ListFollowing",
+            "ListLiked",
+            "ListPlayLater"
+        ]
+    }
+]

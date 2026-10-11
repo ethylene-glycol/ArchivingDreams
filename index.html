@@ -1,0 +1,773 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ArchivingDreams</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: #0e0e0e;
+      color: #f8f8f8;
+      font: 16px/1.6 "Titillium Web", sans-serif;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+    }
+
+    table {
+      width: 100%;
+      margin: 1rem 0 2rem;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: .5rem .65rem;
+      border: 1px solid #666;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #181818;
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 28%;
+    }
+
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    code {
+      font: .95em ui-monospace, Consolas, monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>ArchivingDreams</h1>
+  <p>This is a project dedicated to reverse engineering Dreams' server endpoints and archiving as much as we can.</p>
+  <h2>Progress</h2>
+  <p><b>Oct 11:</b> We've been able to identify all these routes, but we've had no luck actually trying to get anything
+    from them. It's possible that they're just down, much like the website, but the other possibility is that the game
+    is sending some sort of token or header to confirm to the Dreams servers that the game is legitemate. Of course,
+    we'd need to spoof that, so that's what I'm checking on next.</p>
+  <h2>How we've derived these routes</h2>
+  <p>These routes have been directly derived from a decompiled version of Dreams. We're specifically using Ghidra, but
+    if you wanted to replicate this, Binja and IDA Pro will do just fine.</p>
+  <h2>Services and their methods</h2>
+  <p>
+    Dreams' services are accessed through
+    <code>
+        https://prod.puprod.indreams.me/puserver.v1.[SERVICE]/[METHOD]
+      </code>
+  </p>
+  <h3>BlobsService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>CreateBlob</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.BlobsService/CreateBlob"><code>/puserver.v1.BlobsService/CreateBlob</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>FindMissingBlobs</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.BlobsService/FindMissingBlobs"><code>/puserver.v1.BlobsService/FindMissingBlobs</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>CommunityService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>FetchPlaylistTopic</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/FetchPlaylistTopic"><code>/puserver.v1.CommunityService/FetchPlaylistTopic</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetCommunityJam</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/GetCommunityJam"><code>/puserver.v1.CommunityService/GetCommunityJam</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetHighlightPage</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/GetHighlightPage"><code>/puserver.v1.CommunityService/GetHighlightPage</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListCommunityJamEntries</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/ListCommunityJamEntries"><code>/puserver.v1.CommunityService/ListCommunityJamEntries</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListCommunityJams</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/ListCommunityJams"><code>/puserver.v1.CommunityService/ListCommunityJams</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>SuggestCommunityJamEntries</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/SuggestCommunityJamEntries"><code>/puserver.v1.CommunityService/SuggestCommunityJamEntries</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>VoteCommunityJam</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.CommunityService/VoteCommunityJam"><code>/puserver.v1.CommunityService/VoteCommunityJam</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>DiscoveryService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>SearchCreations</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DiscoveryService/SearchCreations"><code>/puserver.v1.DiscoveryService/SearchCreations</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>SearchUserCreations</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DiscoveryService/SearchUserCreations"><code>/puserver.v1.DiscoveryService/SearchUserCreations</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>SearchUsers</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DiscoveryService/SearchUsers"><code>/puserver.v1.DiscoveryService/SearchUsers</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>DreamService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>AcceptCollabInvite</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/AcceptCollabInvite"><code>/puserver.v1.DreamService/AcceptCollabInvite</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>CreateComment</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/CreateComment"><code>/puserver.v1.DreamService/CreateComment</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>CreationModerationReport</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/CreationModerationReport"><code>/puserver.v1.DreamService/CreationModerationReport</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteCollection</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteCollection"><code>/puserver.v1.DreamService/DeleteCollection</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteCollectionVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteCollectionVersion"><code>/puserver.v1.DreamService/DeleteCollectionVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteComment</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteComment"><code>/puserver.v1.DreamService/DeleteComment</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteDream</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteDream"><code>/puserver.v1.DreamService/DeleteDream</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteDreamVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteDreamVersion"><code>/puserver.v1.DreamService/DeleteDreamVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeletePhoto</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeletePhoto"><code>/puserver.v1.DreamService/DeletePhoto</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteScene</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteScene"><code>/puserver.v1.DreamService/DeleteScene</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>DeleteSceneVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/DeleteSceneVersion"><code>/puserver.v1.DreamService/DeleteSceneVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>FindMissingCreations</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/FindMissingCreations"><code>/puserver.v1.DreamService/FindMissingCreations</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>FindMissingPhotos</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/FindMissingPhotos"><code>/puserver.v1.DreamService/FindMissingPhotos</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>FindMissingVersions</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/FindMissingVersions"><code>/puserver.v1.DreamService/FindMissingVersions</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetCollectionMap</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetCollectionMap"><code>/puserver.v1.DreamService/GetCollectionMap</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetCollectionVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetCollectionVersion"><code>/puserver.v1.DreamService/GetCollectionVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetComment</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetComment"><code>/puserver.v1.DreamService/GetComment</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetCommentDetails</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetCommentDetails"><code>/puserver.v1.DreamService/GetCommentDetails</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetCreationDetails</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetCreationDetails"><code>/puserver.v1.DreamService/GetCreationDetails</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetDreamMap</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetDreamMap"><code>/puserver.v1.DreamService/GetDreamMap</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetDreamVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetDreamVersion"><code>/puserver.v1.DreamService/GetDreamVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetEditRightRef</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetEditRightRef"><code>/puserver.v1.DreamService/GetEditRightRef</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetPhotoDetails</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetPhotoDetails"><code>/puserver.v1.DreamService/GetPhotoDetails</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetReviewComment</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetReviewComment"><code>/puserver.v1.DreamService/GetReviewComment</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetSceneVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetSceneVersion"><code>/puserver.v1.DreamService/GetSceneVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetUserLimits</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/GetUserLimits"><code>/puserver.v1.DreamService/GetUserLimits</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>InviteCollab</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/InviteCollab"><code>/puserver.v1.DreamService/InviteCollab</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListCollectionContents</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListCollectionContents"><code>/puserver.v1.DreamService/ListCollectionContents</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListCollectionVersionCredits</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListCollectionVersionCredits"><code>/puserver.v1.DreamService/ListCollectionVersionCredits</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListCollectionVersions</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListCollectionVersions"><code>/puserver.v1.DreamService/ListCollectionVersions</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListComments</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListComments"><code>/puserver.v1.DreamService/ListComments</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListDreamVersionCredits</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListDreamVersionCredits"><code>/puserver.v1.DreamService/ListDreamVersionCredits</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListDreamVersions</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListDreamVersions"><code>/puserver.v1.DreamService/ListDreamVersions</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListPhotos</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListPhotos"><code>/puserver.v1.DreamService/ListPhotos</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListRemixedByCreations</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListRemixedByCreations"><code>/puserver.v1.DreamService/ListRemixedByCreations</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListSceneVersionCredits</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListSceneVersionCredits"><code>/puserver.v1.DreamService/ListSceneVersionCredits</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListSceneVersions</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListSceneVersions"><code>/puserver.v1.DreamService/ListSceneVersions</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListUsedByCreations</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListUsedByCreations"><code>/puserver.v1.DreamService/ListUsedByCreations</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListUsedCreations</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/ListUsedCreations"><code>/puserver.v1.DreamService/ListUsedCreations</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>MapUpdateTool</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/MapUpdateTool"><code>/puserver.v1.DreamService/MapUpdateTool</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>PublishCollection</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/PublishCollection"><code>/puserver.v1.DreamService/PublishCollection</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>PublishDream</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/PublishDream"><code>/puserver.v1.DreamService/PublishDream</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>PublishPhoto</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/PublishPhoto"><code>/puserver.v1.DreamService/PublishPhoto</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>PublishScene</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/PublishScene"><code>/puserver.v1.DreamService/PublishScene</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>RemoveCollab</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/RemoveCollab"><code>/puserver.v1.DreamService/RemoveCollab</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateCollection</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateCollection"><code>/puserver.v1.DreamService/UpdateCollection</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateCollectionVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateCollectionVersion"><code>/puserver.v1.DreamService/UpdateCollectionVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateComment</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateComment"><code>/puserver.v1.DreamService/UpdateComment</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateDream</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateDream"><code>/puserver.v1.DreamService/UpdateDream</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateDreamVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateDreamVersion"><code>/puserver.v1.DreamService/UpdateDreamVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdatePhoto</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdatePhoto"><code>/puserver.v1.DreamService/UpdatePhoto</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateScene</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateScene"><code>/puserver.v1.DreamService/UpdateScene</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateSceneVersion</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateSceneVersion"><code>/puserver.v1.DreamService/UpdateSceneVersion</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateTool</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpdateTool"><code>/puserver.v1.DreamService/UpdateTool</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpgradeEditRights</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.DreamService/UpgradeEditRights"><code>/puserver.v1.DreamService/UpgradeEditRights</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>FeedsService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>GetFollowingAfter</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.FeedsService/GetFollowingAfter"><code>/puserver.v1.FeedsService/GetFollowingAfter</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetNotificationsAfter</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.FeedsService/GetNotificationsAfter"><code>/puserver.v1.FeedsService/GetNotificationsAfter</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListActivity</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.FeedsService/ListActivity"><code>/puserver.v1.FeedsService/ListActivity</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListFollowingFeed</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.FeedsService/ListFollowingFeed"><code>/puserver.v1.FeedsService/ListFollowingFeed</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListNotifications</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.FeedsService/ListNotifications"><code>/puserver.v1.FeedsService/ListNotifications</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ShareCreation</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.FeedsService/ShareCreation"><code>/puserver.v1.FeedsService/ShareCreation</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>IdentityService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>GetPlayerIdentity</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/GetPlayerIdentity"><code>/puserver.v1.IdentityService/GetPlayerIdentity</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetTelemetryConfig</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/GetTelemetryConfig"><code>/puserver.v1.IdentityService/GetTelemetryConfig</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetUserDetails</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/GetUserDetails"><code>/puserver.v1.IdentityService/GetUserDetails</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListBlocked</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/ListBlocked"><code>/puserver.v1.IdentityService/ListBlocked</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListFriends</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/ListFriends"><code>/puserver.v1.IdentityService/ListFriends</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>LoginUser</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/LoginUser"><code>/puserver.v1.IdentityService/LoginUser</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>RefreshBlockList</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/RefreshBlockList"><code>/puserver.v1.IdentityService/RefreshBlockList</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>RefreshFriendsList</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/RefreshFriendsList"><code>/puserver.v1.IdentityService/RefreshFriendsList</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>RefreshUser</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/RefreshUser"><code>/puserver.v1.IdentityService/RefreshUser</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdatePlayerIdentity</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/UpdatePlayerIdentity"><code>/puserver.v1.IdentityService/UpdatePlayerIdentity</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UpdateUser</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/UpdateUser"><code>/puserver.v1.IdentityService/UpdateUser</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>UserModerationReport</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.IdentityService/UserModerationReport"><code>/puserver.v1.IdentityService/UserModerationReport</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>ImportService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>SubscribeImport</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ImportService/SubscribeImport"><code>/puserver.v1.ImportService/SubscribeImport</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>ScoreboardsService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>DeleteScoreboard</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/DeleteScoreboard"><code>/puserver.v1.ScoreboardsService/DeleteScoreboard</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetScoreboard</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/GetScoreboard"><code>/puserver.v1.ScoreboardsService/GetScoreboard</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListLocalScoreboardScores</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/ListLocalScoreboardScores"><code>/puserver.v1.ScoreboardsService/ListLocalScoreboardScores</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListScoreboardScores</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/ListScoreboardScores"><code>/puserver.v1.ScoreboardsService/ListScoreboardScores</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListScoreboards</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/ListScoreboards"><code>/puserver.v1.ScoreboardsService/ListScoreboards</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>PostScoreboardScore</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/PostScoreboardScore"><code>/puserver.v1.ScoreboardsService/PostScoreboardScore</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ResetScoreboard</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.ScoreboardsService/ResetScoreboard"><code>/puserver.v1.ScoreboardsService/ResetScoreboard</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>SocialService</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">Endpoint</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>GetSocialState</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.SocialService/GetSocialState"><code>/puserver.v1.SocialService/GetSocialState</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>GetSocialStats</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.SocialService/GetSocialStats"><code>/puserver.v1.SocialService/GetSocialStats</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListFollowing</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.SocialService/ListFollowing"><code>/puserver.v1.SocialService/ListFollowing</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListLiked</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.SocialService/ListLiked"><code>/puserver.v1.SocialService/ListLiked</code></a>
+        </td>
+      </tr>
+      <tr>
+        <td><code>ListPlayLater</code></td>
+        <td><a
+            href="https://prod.puprod.indreams.me/puserver.v1.SocialService/ListPlayLater"><code>/puserver.v1.SocialService/ListPlayLater</code></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>
